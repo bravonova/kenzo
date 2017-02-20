@@ -22,33 +22,33 @@ STRIP=$TOOLCHAIN/aarch64-linux-android-strip
 
 #Paths
 OUT_DIR=$KERNEL_DIR/out
-OUT_ZIP=$KERNEL_DIR/Blaze-Releases
+OUT_ZIP=$KERNEL_DIR/Raven-Releases
 MODULE_DIR=$OUT_DIR/system/lib/modules
 NEW_OUT=$OUT_DIR/tools
 
 # Kernel Version Info
-BASE="-Blaze™"
-CUR_VER="-6"
-BLAZE_VER="$BASE$CUR_VER"
+BASE="-Raven™"
+CUR_VER="-2.0"
+RAVEN_VER="$BASE$CUR_VER"
  
 
 # Variables
 
-DEFCONFIG="blaze_defconfig"
-export LOCALVERSION=~`echo $BLAZE_VER`
+DEFCONFIG="raven_defconfig"
+export LOCALVERSION=~`echo $RAVEN_VER`
 export CROSS_COMPILE=$TOOLCHAIN/aarch64-linux-android-
 export ARCH=arm64
-export KBUILD_BUILD_USER="GuneetAtwal"
+export KBUILD_BUILD_USER="bravonova"
 export KBUILD_BUILD_HOST="CM13"
 
-function make_blaze {
+function make_raven {
 		echo -e "$green*******************************************************"
-		echo "                  Compiling $BLAZE_VER	              "
+		echo "                  Compiling $RAVEN_VER	              "
 		echo -e "*****************************************************"
 		echo
 		make $DEFCONFIG
 		make menuconfig
-		make -j9
+		make -j3
 		rm -rf $NEWOUT/Image
 		cp -vr $IMAGE $NEW_OUT
 		make_dtb
@@ -65,14 +65,14 @@ function make_clean {
 		echo "          Cleaning up object files and other stuff	              "
 		echo -e "***********************************************$default"
 		make mrproper
-		make_blaze
+		make_raven
 	}
 		
 function make_recompile {
 			echo -e "$cyan*******************************************************"
-			echo "             Recompiling $BLAZE_VER	              "
+			echo "             Recompiling $RAVEN_VER	              "
 			echo -e "*****************************************************"
-			make -j8
+			make -j2
 			rm -rf $NEWOUT/Image
 			cp -vr $IMAGE $NEW_OUT
 			make_dtb
@@ -91,15 +91,15 @@ function make_dtb {
 
 function strip_modules {
 		rm -rf $MODULE_DIR/*
-		mkdir $MODULE_DIR/blaze
+		mkdir $MODULE_DIR/raven
 		find . -path ./build -prune -o -name '*.ko' -print | xargs cp -t $MODULE_DIR/
 		cd $MODULE_DIR
 		echo -e "$cyan*******************************************************"
 		echo "             Stripping modules for size....	              "
 		echo -e "*****************************************************"
 		$STRIP --strip-unneeded *.ko
-		mv $MODULE_DIR/wlan.ko $MODULE_DIR/blaze/blaze_wlan.ko
-		ln -s /system/lib/modules/blaze/blaze_wlan.ko $MODULE_DIR/wlan.ko
+		mv $MODULE_DIR/wlan.ko $MODULE_DIR/raven/raven_wlan.ko
+		ln -s /system/lib/modules/raven/raven_wlan.ko $MODULE_DIR/wlan.ko
 		cd $KERNEL_DIR
 		}
 
@@ -109,9 +109,9 @@ function make_zip {
 		echo -e "*****************************************************"
 		cd $OUT_DIR
 		rm -f '*.zip'
-		zip -yr BlazeKernel-cm13`echo $CUR_VER`.zip *
-		mv BlazeKernel-cm13`echo $CUR_VER`.zip $OUT_ZIP
-		echo "       Find your zip in Blaze-Releases directory"
+		zip -yr RavenKernel-cm13`echo $CUR_VER`.zip *
+		mv RavenKernel-cm13`echo $CUR_VER`.zip $OUT_ZIP
+		echo "       Find your zip in Raven-Releases directory"
 		echo -e "$default"
 		cd $KERNEL_DIR 
 		}
@@ -130,7 +130,7 @@ while read -p " 'Y' to Compile all , 'R' to clean and recompile , 'C' to to do a
 do
 case "$choice" in
 	y|Y)
-		make_blaze
+		make_raven
 		break
 		;;
 	r|R )
